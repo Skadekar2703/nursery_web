@@ -1,0 +1,48 @@
+/* src/styles/variables.css */
+:root {
+  /* Brand Botanical Palette */
+  --color-primary-green: #185C3A;
+  --color-dark-green: #103D29;
+  --color-accent-green: #3E9B57;
+  --color-soft-sage: #E5EFE3;
+  --color-warm-cream: #FAF8F0;
+  --color-white: #FFFFFF;
+  --color-primary-text: #1D2B22;
+  --color-secondary-text: #737B73;
+  --color-border: #E4E7DF;
+  --color-success: #25834A;
+  --color-error: #C9473D;
+  --color-warning: #D9822B;
+  
+  /* Additional UI tints */
+  --color-sage-subtle: #F3F7F2;
+  --color-cream-subtle: #FDFBF5;
+  --color-badge-gold: #FBF1D5;
+  --color-badge-gold-text: #8E6316;
+
+  /* Typography */
+  --font-heading: 'Outfit', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(16, 61, 41, 0.04);
+  --shadow-md: 0 6px 20px rgba(16, 61, 41, 0.08);
+  --shadow-lg: 0 12px 32px rgba(16, 61, 41, 0.12);
+  --shadow-float: 0 20px 40px -10px rgba(16, 61, 41, 0.16);
+
+  /* Border radius */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 350ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Container width */
+  --container-max: 1240px;
+}

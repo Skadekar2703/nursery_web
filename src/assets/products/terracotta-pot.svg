@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="500" y2="500" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FAF8F0" />
+      <stop offset="100%" stop-color="#EFF4EC" />
+    </linearGradient>
+    <filter id="pShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#103D29" flood-opacity="0.1" />
+    </filter>
+  </defs>
+  <rect width="500" height="500" rx="28" fill="url(#bgGrad)" />
+  <circle cx="250" cy="230" r="160" fill="#E5EFE3" opacity="0.45" />
+  
+  <!-- Foliage Layer -->
+  <g id="foliage">
+    <!-- Clean Artisan Pot -->
+  </g>
+  
+  <!-- Pot / Container Layer -->
+  <g id="pot" filter="url(#pShadow)">
+    
+      <!-- Handmade Traditional Terracotta Planter -->
+      <path d="M165 210 L190 390 Q250 405 310 390 L335 210 Z" fill="#C86A45" />
+      <ellipse cx="250" cy="210" rx="85" ry="18" fill="#DA7851" />
+      <ellipse cx="250" cy="210" rx="74" ry="12" fill="#8C4223" />
+      <!-- Thick Upper Rolled Rim -->
+      <path d="M158 202 Q250 218 342 202 L342 216 Q250 232 158 216 Z" fill="#B45935" />
+      <!-- Matching Saucer Plate -->
+      <path d="M170 395 Q250 415 330 395 L335 410 Q250 430 165 410 Z" fill="#DA7851" />
+    
+  </g>
+</svg>

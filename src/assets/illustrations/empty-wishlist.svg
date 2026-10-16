@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 320" fill="none">
+  <circle cx="200" cy="160" r="120" fill="#FAF8F0" />
+  <circle cx="200" cy="160" r="95" fill="#FCECEE" opacity="0.7" />
+  <!-- Botanical heart outline -->
+  <path d="M200 230 C150 190 120 150 120 120 C120 90 145 70 175 70 C190 70 200 80 200 90 C200 80 210 70 225 70 C255 70 280 90 280 120 C280 150 250 190 200 230 Z" fill="#FFFFFF" stroke="#E24B6A" stroke-width="4" stroke-linejoin="round" />
+  <!-- Sprout inside heart -->
+  <path d="M200 170 C200 140 185 130 180 125 C195 125 205 135 200 170" fill="#3E9B57" />
+  <path d="M200 170 C200 145 215 135 220 130 C205 130 195 140 200 170" fill="#185C3A" />
+</svg>

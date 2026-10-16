@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="500" y2="500" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FAF8F0" />
+      <stop offset="100%" stop-color="#EFF4EC" />
+    </linearGradient>
+    <filter id="pShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#103D29" flood-opacity="0.1" />
+    </filter>
+  </defs>
+  <rect width="500" height="500" rx="28" fill="url(#bgGrad)" />
+  <circle cx="250" cy="230" r="160" fill="#E5EFE3" opacity="0.45" />
+  
+  <!-- Foliage Layer -->
+  <g id="foliage">
+    
+  </g>
+  
+  <!-- Pot / Container Layer -->
+  <g id="pot" filter="url(#pShadow)">
+    
+      <!-- Golden Macrame / Brass Hanging Cords -->
+      <line x1="250" y1="30" x2="190" y2="280" stroke="#C59B27" stroke-width="3" />
+      <line x1="250" y1="30" x2="310" y2="280" stroke="#C59B27" stroke-width="3" />
+      <line x1="250" y1="30" x2="250" y2="280" stroke="#E5C158" stroke-width="2.5" />
+      <circle cx="250" cy="30" r="8" fill="#D4AF37" />
+      <!-- Suspended Half Sphere Bowl -->
+      <path d="M180 270 C185 365 315 365 320 270 Z" fill="#185C3A" />
+      <ellipse cx="250" cy="270" rx="70" ry="16" fill="#25834A" />
+      <ellipse cx="250" cy="270" rx="60" ry="11" fill="#103D29" />
+      <!-- Little trailing ivy leaves -->
+      <path d="M210 280 Q190 330 170 370" stroke="#3E9B57" stroke-width="3" fill="none" />
+      <path d="M290 280 Q310 330 325 380" stroke="#3E9B57" stroke-width="3" fill="none" />
+    
+  </g>
+</svg>

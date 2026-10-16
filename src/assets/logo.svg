@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" fill="none">
+  <defs>
+    <linearGradient id="logoLeafLeft" x1="18" y1="46" x2="10" y2="12" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#185C3A" />
+      <stop offset="100%" stop-color="#3E9B57" />
+    </linearGradient>
+    <linearGradient id="logoLeafRight" x1="30" y1="40" x2="48" y2="18" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#103D29" />
+      <stop offset="100%" stop-color="#25834A" />
+    </linearGradient>
+  </defs>
+  <!-- Leaves Emblem -->
+  <g transform="translate(4, 2)">
+    <circle cx="28" cy="28" r="26" fill="#E5EFE3" opacity="0.6" />
+    <!-- Main stem -->
+    <path d="M28 50 C28 36, 27 22, 18 10 C30 9, 37 21, 30 38" fill="url(#logoLeafLeft)" />
+    <!-- Secondary leaf -->
+    <path d="M29 39 C34 31, 42 26, 49 20 C49 32, 40 39, 29 42" fill="url(#logoLeafRight)" />
+    <!-- Leaf veins -->
+    <path d="M28 50 C28 34, 28 23, 21 14" stroke="#FAF8F0" stroke-width="1.8" stroke-linecap="round" />
+    <path d="M29 39 C35 32, 40 28, 46 23" stroke="#FAF8F0" stroke-width="1.4" stroke-linecap="round" />
+    <!-- Little soil / seed droplet -->
+    <circle cx="28" cy="50" r="2.5" fill="#185C3A" />
+  </g>
+  <!-- Wordmark -->
+  <text x="74" y="36" font-family="'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#185C3A" letter-spacing="-0.5">Nursury</text>
+  <!-- Subtitle Tagline -->
+  <text x="75" y="49" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="9" font-weight="500" fill="#737B73" letter-spacing="0.8">BRINGING GREEN LIFE HOME</text>
+</svg>

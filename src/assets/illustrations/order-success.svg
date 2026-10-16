@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 320" fill="none">
+  <circle cx="200" cy="160" r="110" fill="#E5EFE3" />
+  <circle cx="200" cy="160" r="85" fill="#185C3A" />
+  <!-- Radiant white checkmark -->
+  <path d="M165 160 L190 185 L235 135" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+  <!-- Flourishing botanical wreath -->
+  <path d="M130 180 C120 150 130 120 150 100" stroke="#3E9B57" stroke-width="3.5" stroke-linecap="round" fill="none" />
+  <circle cx="140" cy="105" r="4" fill="#3E9B57" />
+  <circle cx="125" cy="140" r="4" fill="#3E9B57" />
+  
+  <path d="M270 180 C280 150 270 120 250 100" stroke="#3E9B57" stroke-width="3.5" stroke-linecap="round" fill="none" />
+  <circle cx="260" cy="105" r="4" fill="#3E9B57" />
+  <circle cx="275" cy="140" r="4" fill="#3E9B57" />
+</svg>
