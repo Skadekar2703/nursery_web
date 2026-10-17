@@ -1,6 +1,6 @@
 // src/pages/Profile.jsx
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   MapPin,
   Package,
@@ -9,53 +9,134 @@ import {
   Plus,
   Trash2,
   Edit2,
-  ShieldCheck
+  ShieldCheck,
+  LogOut,
+  ArrowRight
 } from 'lucide-react';
-import { useUser } from '../context/UserContext';
+import { useAuth } from '../context/AuthContext';
 import { useAddress } from '../context/AddressContext';
 import { useOrders } from '../context/OrderContext';
 import { useWishlist } from '../context/WishlistContext';
 
 export function Profile() {
-  const { profile, updateProfile } = useUser();
+  const { user, profile, isAdmin, signOut, updateProfile } = useAuth();
   const { addresses, deleteAddress, setDefaultAddress } = useAddress();
   const { orders } = useOrders();
   const { wishlistCount } = useWishlist();
+  const navigate = useNavigate();
 
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    displayName: profile.displayName || '',
-    email: profile.email || '',
-    bio: profile.bio || ''
+    displayName: '',
+    bio: ''
   });
 
-  const handleSaveProfile = (e) => {
+  const handleToggleEdit = () => {
+    if (!isEditing) {
+      setFormData({
+        displayName: profile?.full_name || profile?.displayName || '',
+        bio: profile?.bio || ''
+      });
+    }
+    setIsEditing((prev) => !prev);
+  };
+
+  const handleSaveProfile = async (e) => {
     e.preventDefault();
-    updateProfile(formData);
+    await updateProfile(formData);
     setIsEditing(false);
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/', { replace: true });
+  };
+
+  const displayName = profile?.full_name || profile?.displayName || user?.email?.split('@')[0] || 'Plant Parent';
+  const displayEmail = profile?.email || user?.email || 'guest@nursury.store';
+  const joinedDate = profile?.created_at
+    ? new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+    : 'October 2026';
+
   return (
     <div className="container" style={{ paddingTop: '2.5rem', paddingBottom: '5rem', maxWidth: '880px' }}>
-      <div style={{ marginBottom: '2.5rem' }}>
+      {/* Top Banner for Admins */}
+      {isAdmin && (
         <div
           style={{
-            fontSize: '0.825rem',
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-            color: 'var(--color-accent-green)',
-            marginBottom: '0.35rem'
+            backgroundColor: 'var(--color-dark-green)',
+            color: '#FFFFFF',
+            borderRadius: 'var(--radius-lg)',
+            padding: '1.25rem 1.5rem',
+            marginBottom: '2rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '1rem',
+            boxShadow: 'var(--shadow-md)'
           }}
         >
-          Customer Account & Preferences
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+            <ShieldCheck size={24} color="var(--color-accent-green)" />
+            <div>
+              <div style={{ fontWeight: 700, fontSize: '1.05rem' }}>Administrator Clearance Active</div>
+              <div style={{ fontSize: '0.85rem', color: '#CBD5C8' }}>
+                You have verified staff administration rights for Nursury botanical store.
+              </div>
+            </div>
+          </div>
+          <Link to="/admin" className="btn btn-sm" style={{ backgroundColor: 'var(--color-accent-green)', color: '#FFF' }}>
+            <span>Open Admin Console</span>
+            <ArrowRight size={15} />
+          </Link>
         </div>
-        <h1>Guest Plant Parent Profile</h1>
-        <p style={{ marginTop: '0.35rem' }}>
-          Manage your local botanical preferences, delivery addresses, and view simulated shopping history.
-        </p>
+      )}
+
+      {/* Header */}
+      <div style={{ marginBottom: '2.5rem', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <div
+            style={{
+              fontSize: '0.825rem',
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              color: 'var(--color-accent-green)',
+              marginBottom: '0.35rem'
+            }}
+          >
+            Customer Account & Profile
+          </div>
+          <h1>My Botanical Sanctuary</h1>
+          <p style={{ marginTop: '0.35rem' }}>
+            Manage your personal profile, review order history, and maintain delivery addresses.
+          </p>
+        </div>
+
+        {user ? (
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="btn btn-outline btn-sm"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: 'var(--color-error)' }}
+          >
+            <LogOut size={15} />
+            <span>Sign Out</span>
+          </button>
+        ) : (
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <Link to="/login" className="btn btn-primary btn-sm">
+              Sign In
+            </Link>
+            <Link to="/signup" className="btn btn-secondary btn-sm">
+              Register
+            </Link>
+          </div>
+        )}
       </div>
 
+      {/* Profile Card */}
       <div
         className="profile-card"
         style={{
@@ -67,7 +148,16 @@ export function Profile() {
           marginBottom: '2.5rem'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: '1.5rem',
+            flexWrap: 'wrap',
+            gap: '1rem'
+          }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
             <div
               style={{
@@ -83,35 +173,53 @@ export function Profile() {
                 fontWeight: 700
               }}
             >
-              {profile.displayName.charAt(0).toUpperCase()}
+              {displayName.charAt(0).toUpperCase()}
             </div>
             <div>
-              <h2 style={{ fontSize: '1.4rem', color: 'var(--color-dark-green)' }}>{profile.displayName}</h2>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <h2 style={{ fontSize: '1.4rem', color: 'var(--color-dark-green)' }}>
+                  {displayName}
+                </h2>
+                <span className={`admin-badge ${isAdmin ? 'info' : 'success'}`} style={{ fontSize: '0.7rem' }}>
+                  {isAdmin ? 'Staff Admin' : 'Verified Customer'}
+                </span>
+              </div>
               <div style={{ fontSize: '0.9rem', color: 'var(--color-secondary-text)' }}>
-                {profile.email} • Member since {profile.joinedDate}
+                {displayEmail} • Member since {joinedDate}
               </div>
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsEditing(!isEditing)}
-            className="btn btn-secondary btn-sm"
-          >
-            <Edit2 size={15} />
-            <span>{isEditing ? 'Cancel' : 'Edit Profile'}</span>
-          </button>
+          {user && (
+            <button
+              type="button"
+              onClick={handleToggleEdit}
+              className="btn btn-secondary btn-sm"
+            >
+              <Edit2 size={15} />
+              <span>{isEditing ? 'Cancel' : 'Edit Profile'}</span>
+            </button>
+          )}
         </div>
 
         {!isEditing ? (
-          <p style={{ color: 'var(--color-primary-text)', opacity: 0.85, fontSize: '0.95rem', fontStyle: 'italic', borderTop: '1px solid var(--color-border)', paddingTop: '1rem' }}>
-            "{profile.bio}"
+          <p
+            style={{
+              color: 'var(--color-primary-text)',
+              opacity: 0.85,
+              fontSize: '0.95rem',
+              fontStyle: 'italic',
+              borderTop: '1px solid var(--color-border)',
+              paddingTop: '1rem'
+            }}
+          >
+            "{profile?.bio || 'Botanical enthusiast & indoor jungle curator.'}"
           </p>
         ) : (
           <form onSubmit={handleSaveProfile} style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1.5rem' }}>
             <div className="grid-2">
               <div className="form-group">
-                <label className="form-label">Display Name</label>
+                <label className="form-label">Full Name</label>
                 <input
                   type="text"
                   value={formData.displayName}
@@ -122,13 +230,13 @@ export function Profile() {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Contact Email</label>
+                <label className="form-label">Email Address (Managed by Supabase Auth)</label>
                 <input
                   type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  value={displayEmail}
+                  disabled
                   className="form-input"
-                  required
+                  style={{ backgroundColor: '#F1F3F4', cursor: 'not-allowed' }}
                 />
               </div>
             </div>
@@ -140,6 +248,7 @@ export function Profile() {
                 value={formData.bio}
                 onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                 className="form-textarea"
+                placeholder="Share your botanical interests..."
               />
             </div>
 
@@ -155,7 +264,8 @@ export function Profile() {
         )}
       </div>
 
-      <div className="profile-nav-grid">
+      {/* Quick Nav Cards */}
+      <div className="profile-nav-grid" style={{ marginBottom: '2.5rem' }}>
         <Link
           to="/orders"
           style={{
@@ -166,8 +276,7 @@ export function Profile() {
             display: 'flex',
             alignItems: 'center',
             gap: '1rem',
-            boxShadow: 'var(--shadow-sm)',
-            transition: 'transform var(--transition-fast)'
+            boxShadow: 'var(--shadow-sm)'
           }}
           className="card"
         >
@@ -190,7 +299,7 @@ export function Profile() {
               My Orders
             </div>
             <div style={{ fontSize: '0.85rem', color: 'var(--color-secondary-text)' }}>
-              {orders.length} simulated orders
+              {orders.length} order{orders.length !== 1 ? 's' : ''} recorded
             </div>
           </div>
         </Link>
@@ -205,8 +314,7 @@ export function Profile() {
             display: 'flex',
             alignItems: 'center',
             gap: '1rem',
-            boxShadow: 'var(--shadow-sm)',
-            transition: 'transform var(--transition-fast)'
+            boxShadow: 'var(--shadow-sm)'
           }}
           className="card"
         >
@@ -229,7 +337,7 @@ export function Profile() {
               Saved Wishlist
             </div>
             <div style={{ fontSize: '0.85rem', color: 'var(--color-secondary-text)' }}>
-              {wishlistCount} saved plants
+              {wishlistCount} saved plant{wishlistCount !== 1 ? 's' : ''}
             </div>
           </div>
         </Link>
@@ -244,8 +352,7 @@ export function Profile() {
             display: 'flex',
             alignItems: 'center',
             gap: '1rem',
-            boxShadow: 'var(--shadow-sm)',
-            transition: 'transform var(--transition-fast)'
+            boxShadow: 'var(--shadow-sm)'
           }}
           className="card"
         >
@@ -274,6 +381,7 @@ export function Profile() {
         </Link>
       </div>
 
+      {/* Saved Delivery Addresses */}
       <section
         className="profile-card"
         style={{
@@ -361,10 +469,11 @@ export function Profile() {
         </div>
       </section>
 
+      {/* Security note */}
       <div className="demo-banner">
         <ShieldCheck size={20} color="var(--color-primary-green)" style={{ flexShrink: 0 }} />
         <span>
-          <strong>Simulated Guest Account:</strong> Profile data is securely persisted in your browser's localStorage. No passwords, personal cloud logins, or remote database tracking are enabled.
+          <strong>Row Level Security Protected:</strong> Profile records are safeguarded by PostgreSQL RLS. Only you can view or update your personal account information. Administrative role elevation is strictly guarded server-side.
         </span>
       </div>
     </div>

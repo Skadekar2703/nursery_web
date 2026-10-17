@@ -1,12 +1,41 @@
 // src/pages/Categories.jsx
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import { CATEGORIES } from '../data/categories';
-import { PRODUCTS } from '../data/products';
+import { CATEGORIES as INITIAL_CATEGORIES } from '../data/categories';
+import { PRODUCTS as INITIAL_PRODUCTS } from '../data/products';
+import { categoryService } from '../services/categoryService';
+import { productService } from '../services/productService';
 import { CategoryCard } from '../components/category/CategoryCard';
 import { ProductCard } from '../components/product/ProductCard';
 
 export function Categories() {
+  const [categories, setCategories] = useState(INITIAL_CATEGORIES);
+  const [products, setProducts] = useState(INITIAL_PRODUCTS);
+
+  useEffect(() => {
+    let mounted = true;
+    Promise.all([
+      categoryService.getCategories({ activeOnly: true }),
+      productService.getProducts({ activeOnly: true })
+    ]).then(([catRes, prodRes]) => {
+      if (mounted) {
+        if (catRes.data && catRes.data.length > 0) {
+          setCategories(catRes.data);
+        }
+        if (prodRes.data && prodRes.data.length > 0) {
+          setProducts(prodRes.data);
+        }
+      }
+    }).catch((err) => {
+      console.warn('Could not refresh categories page data:', err);
+    });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <div className="container" style={{ paddingTop: '2.5rem', paddingBottom: '5rem' }}>
       {/* Header */}
@@ -25,24 +54,27 @@ export function Categories() {
         </div>
         <h1>Explore Plant Categories</h1>
         <p style={{ marginTop: '0.6rem', fontSize: '1.05rem', color: 'var(--color-secondary-text)' }}>
-          Whether you have a sunlit balcony, a dim home office, or a cozy windowsill, browse our six dedicated botanical departments.
+          Whether you have a sunlit balcony, a dim home office, or a cozy windowsill, browse our dedicated botanical departments.
         </p>
       </div>
 
-      {/* Grid of 6 Categories */}
+      {/* Grid of Categories */}
       <div className="categories-grid" style={{ marginBottom: '5rem' }}>
-        {CATEGORIES.map((category) => (
-          <CategoryCard key={category.id} category={category} />
+        {categories.map((category) => (
+          <CategoryCard key={category.id || category.slug} category={category} />
         ))}
       </div>
 
       {/* Category Deep Dives with Sample Products */}
-      {CATEGORIES.map((cat) => {
-        const catProducts = PRODUCTS.filter((p) => p.categoryId === cat.slug).slice(0, 4);
+      {categories.map((cat) => {
+        const catProducts = products
+          .filter((p) => (p.categoryId === cat.slug || p.categoryId === cat.id || p.category === cat.name) && p.is_active !== false)
+          .slice(0, 4);
+
         if (catProducts.length === 0) return null;
 
         return (
-          <section key={cat.id} style={{ marginBottom: '4rem' }}>
+          <section key={cat.id || cat.slug} style={{ marginBottom: '4rem' }}>
             <div
               style={{
                 display: 'flex',
@@ -64,12 +96,12 @@ export function Categories() {
                     color: 'var(--color-accent-green)'
                   }}
                 >
-                  {cat.tagline}
+                  {cat.tagline || 'Botanical Selection'}
                 </span>
                 <h2 style={{ fontSize: '1.6rem', marginTop: '0.2rem' }}>{cat.name}</h2>
               </div>
-              <Link to={`/shop?category=${cat.slug}`} className="btn btn-outline btn-sm">
-                <span>View all {cat.count} {cat.name}</span>
+              <Link to={`/shop?category=${cat.slug || cat.id}`} className="btn btn-outline btn-sm">
+                <span>View all {cat.name}</span>
                 <ArrowRight size={15} />
               </Link>
             </div>

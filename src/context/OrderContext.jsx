@@ -3,7 +3,8 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { loadFromStorage, saveToStorage } from '../utils/storage';
 import { useCart } from './CartContext';
 import { useToast } from './ToastContext';
-import { PRODUCTS } from '../data/products';
+import { useAuth } from './AuthContext';
+import { orderService } from '../services/orderService';
 
 const OrderContext = createContext(null);
 const STORAGE_KEY = 'nursury_orders';
@@ -58,34 +59,43 @@ const INITIAL_ORDERS = [
 export function OrderProvider({ children }) {
   const { clearCart } = useCart();
   const { addToast } = useToast();
+  const { user } = useAuth();
 
   const [orders, setOrders] = useState(() => {
     const saved = loadFromStorage(STORAGE_KEY, INITIAL_ORDERS);
-    if (Array.isArray(saved)) {
-      return saved.map((order) => ({
-        ...order,
-        items: (order.items || []).map((item) => {
-          if (item.image && typeof item.image === 'string' && (item.image.includes('.svg') || item.image.includes('assets/products'))) {
-            const matchedProduct = PRODUCTS.find((p) => p.id === item.productId || p.slug === item.slug);
-            return {
-              ...item,
-              image: matchedProduct ? matchedProduct.image : '/images/onboarding_plant.jpg'
-            };
-          }
-          return item;
-        })
-      }));
-    }
-    return saved;
+    return Array.isArray(saved) ? saved : INITIAL_ORDERS;
   });
+
+  // Sync orders with Supabase if logged in
+  useEffect(() => {
+    let mounted = true;
+    if (user?.id) {
+      orderService.getCustomerOrders(user.id).then((res) => {
+        if (mounted && res.data && res.data.length > 0) {
+          setOrders(res.data);
+        }
+      });
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [user]);
 
   useEffect(() => {
     saveToStorage(STORAGE_KEY, orders);
   }, [orders]);
 
-  const placeOrder = ({ cartItems, subtotal, deliveryFee, discountAmount, finalTotal, address, paymentMethod }) => {
+  const placeOrder = async ({
+    cartItems,
+    subtotal,
+    deliveryFee,
+    discountAmount,
+    finalTotal,
+    address,
+    paymentMethod
+  }) => {
     const randomDigits = Math.floor(10000 + Math.random() * 90000);
-    const orderId = `NUR-${randomDigits}`;
+    const fallbackOrderId = `NUR-${randomDigits}`;
 
     const snapshotItems = cartItems.map((item) => ({
       productId: item.productId,
@@ -98,8 +108,9 @@ export function OrderProvider({ children }) {
       category: item.product.category
     }));
 
-    const newOrder = {
-      id: orderId,
+    const localOrder = {
+      id: fallbackOrderId,
+      orderNumber: fallbackOrderId,
       createdAt: new Date().toISOString(),
       status: 'Confirmed',
       paymentMethod,
@@ -113,19 +124,38 @@ export function OrderProvider({ children }) {
       shippingAddress: { ...address }
     };
 
-    setOrders((prev) => [newOrder, ...prev]);
+    // Attempt remote save if user authenticated
+    try {
+      const res = await orderService.createOrder({
+        cartItems,
+        shippingAddress: address,
+        paymentMethod,
+        subtotal,
+        deliveryFee,
+        finalTotal,
+        user
+      });
+      if (res.data?.orderNumber) {
+        localOrder.id = res.data.orderNumber;
+        localOrder.orderNumber = res.data.orderNumber;
+      }
+    } catch (e) {
+      console.warn('Remote order creation failed, persisting locally:', e);
+    }
+
+    setOrders((prev) => [localOrder, ...prev]);
     clearCart();
-    addToast(`Order ${orderId} placed successfully!`, 'success');
-    return newOrder;
+    addToast(`Order ${localOrder.id} placed successfully!`, 'success');
+    return localOrder;
   };
 
   const getOrderById = (orderId) => {
-    return orders.find((o) => o.id === orderId) || null;
+    return orders.find((o) => o.id === orderId || o.orderNumber === orderId) || null;
   };
 
   const cancelOrder = (orderId) => {
     setOrders((prev) =>
-      prev.map((o) => (o.id === orderId ? { ...o, status: 'Cancelled' } : o))
+      prev.map((o) => (o.id === orderId || o.orderNumber === orderId ? { ...o, status: 'Cancelled' } : o))
     );
     addToast(`Order ${orderId} cancelled`, 'info');
   };

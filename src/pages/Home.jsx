@@ -1,5 +1,4 @@
-// src/pages/Home.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
@@ -11,8 +10,10 @@ import {
   CheckCircle2,
   Send
 } from 'lucide-react';
-import { PRODUCTS } from '../data/products';
-import { CATEGORIES } from '../data/categories';
+import { PRODUCTS as INITIAL_PRODUCTS } from '../data/products';
+import { CATEGORIES as INITIAL_CATEGORIES } from '../data/categories';
+import { productService } from '../services/productService';
+import { categoryService } from '../services/categoryService';
 import { ProductCard } from '../components/product/ProductCard';
 import { CategoryCard } from '../components/category/CategoryCard';
 import { useToast } from '../context/ToastContext';
@@ -21,14 +22,35 @@ export function Home() {
   const { addToast } = useToast();
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterDone, setNewsletterDone] = useState(false);
+  const [products, setProducts] = useState(INITIAL_PRODUCTS);
+  const [categories, setCategories] = useState(INITIAL_CATEGORIES);
 
-  // Filtered collections from central catalog
-  const featuredProducts = PRODUCTS.filter((p) => p.isFeatured).slice(0, 4);
-  const bestSellers = PRODUCTS.filter((p) => p.isBestseller).slice(0, 4);
-  const newArrivals = PRODUCTS.filter((p) => p.isNewArrival).slice(0, 4);
-  const beginnerFriendly = PRODUCTS.filter((p) => p.isBeginnerFriendly).slice(0, 4);
-  const lowLightPlants = PRODUCTS.filter((p) => p.isLowLight).slice(0, 4);
-  const seasonalPicks = PRODUCTS.filter((p) => p.isSeasonal).slice(0, 4);
+  useEffect(() => {
+    let mounted = true;
+    Promise.all([
+      productService.getProducts({ activeOnly: true }),
+      categoryService.getCategories({ activeOnly: true })
+    ]).then(([prodRes, catRes]) => {
+      if (mounted) {
+        if (prodRes.data && prodRes.data.length > 0) setProducts(prodRes.data);
+        if (catRes.data && catRes.data.length > 0) setCategories(catRes.data);
+      }
+    }).catch((err) => {
+      console.warn('Could not load dynamic products on Home:', err);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  // Filtered collections from live catalog (active products only)
+  const activeProducts = products.filter((p) => p.is_active !== false && p.isActive !== false);
+  const featuredProducts = activeProducts.filter((p) => p.isFeatured).slice(0, 4);
+  const bestSellers = activeProducts.filter((p) => p.isBestseller).slice(0, 4);
+  const newArrivals = activeProducts.filter((p) => p.isNewArrival).slice(0, 4);
+  const beginnerFriendly = activeProducts.filter((p) => p.isBeginnerFriendly).slice(0, 4);
+  const lowLightPlants = activeProducts.filter((p) => p.isLowLight).slice(0, 4);
+  const seasonalPicks = activeProducts.filter((p) => p.isSeasonal).slice(0, 4);
 
   const handleNewsletterSubmit = (e) => {
     e.preventDefault();
@@ -238,8 +260,8 @@ export function Home() {
           </div>
 
           <div className="categories-grid">
-            {CATEGORIES.map((cat) => (
-              <CategoryCard key={cat.id} category={cat} />
+            {categories.map((cat) => (
+              <CategoryCard key={cat.id || cat.slug} category={cat} />
             ))}
           </div>
         </div>

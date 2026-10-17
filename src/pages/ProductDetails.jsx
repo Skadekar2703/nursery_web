@@ -1,5 +1,4 @@
-// src/pages/ProductDetails.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   Heart,
@@ -15,7 +14,8 @@ import {
   ChevronRight,
   Share2
 } from 'lucide-react';
-import { PRODUCTS } from '../data/products';
+import { PRODUCTS as INITIAL_PRODUCTS } from '../data/products';
+import { productService } from '../services/productService';
 import { formatINR } from '../utils/formatters';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -30,8 +30,32 @@ export function ProductDetails() {
   const { addToast } = useToast();
 
   const [quantity, setQuantity] = useState(1);
+  const [product, setProduct] = useState(() => {
+    return INITIAL_PRODUCTS.find((p) => p.slug === slug || p.id === slug) || null;
+  });
+  const [relatedProducts, setRelatedProducts] = useState([]);
 
-  const product = PRODUCTS.find((p) => p.slug === slug || p.id === slug);
+  useEffect(() => {
+    let mounted = true;
+
+    productService.getProductBySlug(slug).then((res) => {
+      if (mounted && res.data) {
+        setProduct(res.data);
+        // Load related active products
+        productService.getProducts({ activeOnly: true, category: res.data.categoryId }).then((relRes) => {
+          if (mounted && relRes.data) {
+            setRelatedProducts(
+              relRes.data.filter((p) => p.id !== res.data.id && p.slug !== res.data.slug).slice(0, 4)
+            );
+          }
+        });
+      }
+    });
+
+    return () => {
+      mounted = false;
+    };
+  }, [slug]);
 
   if (!product) {
     return (
@@ -47,14 +71,28 @@ export function ProductDetails() {
     );
   }
 
+  if (product.is_active === false || product.isActive === false) {
+    return (
+      <div className="container" style={{ padding: '6rem 1.5rem', textAlign: 'center' }}>
+        <h2>Plant Currently Unavailable</h2>
+        <p style={{ marginTop: '0.75rem', marginBottom: '2rem' }}>
+          This botanical specimen has been deactivated by the nursery and is not currently available for purchase.
+        </p>
+        <Link to="/shop" className="btn btn-primary">
+          Explore Available Greens
+        </Link>
+      </div>
+    );
+  }
+
   const inWishlist = isInWishlist(product.id);
   const discountPercent = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
 
-  const relatedProducts = PRODUCTS.filter(
-    (p) => p.categoryId === product.categoryId && p.id !== product.id
-  ).slice(0, 4);
+  const displayRelated = relatedProducts.length > 0
+    ? relatedProducts
+    : INITIAL_PRODUCTS.filter((p) => p.categoryId === product.categoryId && p.id !== product.id).slice(0, 4);
 
   const handleQtyChange = (delta) => {
     setQuantity((prev) => Math.max(1, prev + delta));
@@ -477,7 +515,7 @@ export function ProductDetails() {
         </div>
       </div>
 
-      {relatedProducts.length > 0 && (
+      {displayRelated.length > 0 && (
         <section style={{ marginTop: '4rem', paddingTop: '3rem', borderTop: '1px solid var(--color-border)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem' }}>
             <div>
@@ -502,7 +540,7 @@ export function ProductDetails() {
           </div>
 
           <div className="grid-4">
-            {relatedProducts.map((p) => (
+            {displayRelated.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>

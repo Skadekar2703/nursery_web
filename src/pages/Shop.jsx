@@ -1,5 +1,4 @@
-// src/pages/Shop.jsx
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   Search,
@@ -7,8 +6,10 @@ import {
   SlidersHorizontal,
   RotateCcw
 } from 'lucide-react';
-import { PRODUCTS } from '../data/products';
-import { CATEGORIES } from '../data/categories';
+import { PRODUCTS as INITIAL_PRODUCTS } from '../data/products';
+import { CATEGORIES as INITIAL_CATEGORIES } from '../data/categories';
+import { productService } from '../services/productService';
+import { categoryService } from '../services/categoryService';
 import { ProductCard } from '../components/product/ProductCard';
 import { EmptyState } from '../components/common/EmptyState';
 
@@ -41,11 +42,35 @@ export function Shop() {
   const sortBy = searchParams.get('sort') || 'recommended';
 
   // Local filter states
+  const [productsList, setProductsList] = useState(INITIAL_PRODUCTS);
+  const [categoriesList, setCategoriesList] = useState(INITIAL_CATEGORIES);
   const [selectedPlantType, setSelectedPlantType] = useState('All Types');
   const [selectedLight, setSelectedLight] = useState('All Lighting');
   const [selectedSize, setSelectedSize] = useState('All Sizes');
   const [maxPrice, setMaxPrice] = useState(1200);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    Promise.all([
+      productService.getProducts({ activeOnly: true }),
+      categoryService.getCategories({ activeOnly: true })
+    ]).then(([prodRes, catRes]) => {
+      if (mounted) {
+        if (prodRes.data && prodRes.data.length > 0) {
+          setProductsList(prodRes.data);
+        }
+        if (catRes.data && catRes.data.length > 0) {
+          setCategoriesList(catRes.data);
+        }
+      }
+    }).catch((err) => {
+      console.warn('Could not refresh shop catalog:', err);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const setSearchTerm = (value) => {
     setSearchParams((prev) => {
@@ -103,7 +128,7 @@ export function Shop() {
   };
 
   const filteredProducts = useMemo(() => {
-    let result = [...PRODUCTS];
+    let result = productsList.filter((p) => p.is_active !== false && p.isActive !== false);
 
     if (searchTerm.trim()) {
       const q = searchTerm.toLowerCase().trim();
@@ -159,7 +184,7 @@ export function Shop() {
     }
 
     return result;
-  }, [searchTerm, selectedCategory, selectedPlantType, selectedLight, selectedSize, maxPrice, sortBy]);
+  }, [productsList, searchTerm, selectedCategory, selectedPlantType, selectedLight, selectedSize, maxPrice, sortBy]);
 
   return (
     <div className="container" style={{ paddingTop: '2.5rem', paddingBottom: '5rem' }}>
@@ -399,9 +424,9 @@ export function Shop() {
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="form-select"
               >
-                <option value="all">All Categories (6)</option>
-                {CATEGORIES.map((c) => (
-                  <option key={c.id} value={c.slug}>
+                <option value="all">All Categories ({categoriesList.length})</option>
+                {categoriesList.map((c) => (
+                  <option key={c.id || c.slug} value={c.slug || c.id}>
                     {c.name}
                   </option>
                 ))}

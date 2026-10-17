@@ -17,14 +17,18 @@ import {
 import { Logo } from '../common/Logo';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useAuth } from '../../context/AuthContext';
+import { ShieldCheck, LogOut } from 'lucide-react';
 
 export function Navbar() {
   const { cartCount } = useCart();
   const { wishlistCount } = useWishlist();
+  const { user, isAdmin, profile, signOut } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   // Scroll listener
@@ -132,10 +136,196 @@ export function Navbar() {
                 {cartCount > 0 && <span className="nav-badge-count">{cartCount}</span>}
               </Link>
 
-              {/* Profile */}
-              <Link to="/profile" className="nav-action-btn" aria-label="Customer Profile">
-                <User size={19} />
-              </Link>
+              {/* Profile / Account Dropdown */}
+              <div style={{ position: 'relative' }}>
+                <button
+                  type="button"
+                  className="nav-action-btn"
+                  onClick={() => setUserMenuOpen((prev) => !prev)}
+                  aria-label="Account Menu"
+                  style={{
+                    backgroundColor: isAdmin ? 'var(--color-dark-green)' : (user ? 'var(--color-soft-sage)' : 'transparent'),
+                    color: isAdmin ? '#FFFFFF' : (user ? 'var(--color-primary-green)' : 'inherit')
+                  }}
+                >
+                  {isAdmin ? <ShieldCheck size={19} /> : <User size={19} />}
+                </button>
+
+                {userMenuOpen && (
+                  <>
+                    <div
+                      style={{ position: 'fixed', inset: 0, zIndex: 110 }}
+                      onClick={() => setUserMenuOpen(false)}
+                    />
+                    <div
+                      style={{
+                        position: 'absolute',
+                        right: 0,
+                        top: 'calc(100% + 8px)',
+                        width: '240px',
+                        backgroundColor: 'var(--color-white)',
+                        borderRadius: 'var(--radius-lg)',
+                        border: '1px solid var(--color-border)',
+                        boxShadow: 'var(--shadow-float)',
+                        padding: '0.75rem',
+                        zIndex: 120,
+                        animation: 'fadeIn 150ms ease-out'
+                      }}
+                    >
+                      {user ? (
+                        <>
+                          <div
+                            style={{
+                              padding: '0.5rem 0.65rem 0.75rem',
+                              borderBottom: '1px solid var(--color-border)',
+                              marginBottom: '0.4rem'
+                            }}
+                          >
+                            <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--color-dark-green)' }}>
+                              {profile?.full_name || profile?.displayName || user.email?.split('@')[0]}
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--color-secondary-text)', wordBreak: 'break-all' }}>
+                              {user.email}
+                            </div>
+                            {isAdmin && (
+                              <div
+                                style={{
+                                  display: 'inline-block',
+                                  fontSize: '0.7rem',
+                                  fontWeight: 700,
+                                  backgroundColor: 'var(--color-dark-green)',
+                                  color: '#FFF',
+                                  padding: '0.15rem 0.5rem',
+                                  borderRadius: 'var(--radius-pill)',
+                                  marginTop: '0.35rem'
+                                }}
+                              >
+                                Super Admin
+                              </div>
+                            )}
+                          </div>
+
+                          {isAdmin && (
+                            <Link
+                              to="/admin"
+                              onClick={() => setUserMenuOpen(false)}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem',
+                                padding: '0.6rem 0.75rem',
+                                borderRadius: 'var(--radius-md)',
+                                backgroundColor: 'var(--color-soft-sage)',
+                                color: 'var(--color-primary-green)',
+                                fontWeight: 700,
+                                fontSize: '0.85rem',
+                                marginBottom: '0.35rem'
+                              }}
+                            >
+                              <ShieldCheck size={16} />
+                              <span>Admin Console</span>
+                            </Link>
+                          )}
+
+                          <Link
+                            to="/profile"
+                            onClick={() => setUserMenuOpen(false)}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.5rem',
+                              padding: '0.5rem 0.75rem',
+                              borderRadius: 'var(--radius-md)',
+                              fontSize: '0.85rem',
+                              color: 'var(--color-primary-text)'
+                            }}
+                          >
+                            <User size={16} />
+                            <span>My Profile</span>
+                          </Link>
+
+                          <Link
+                            to="/orders"
+                            onClick={() => setUserMenuOpen(false)}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.5rem',
+                              padding: '0.5rem 0.75rem',
+                              borderRadius: 'var(--radius-md)',
+                              fontSize: '0.85rem',
+                              color: 'var(--color-primary-text)'
+                            }}
+                          >
+                            <Package size={16} />
+                            <span>My Orders</span>
+                          </Link>
+
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              setUserMenuOpen(false);
+                              await signOut();
+                            }}
+                            style={{
+                              width: '100%',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.5rem',
+                              padding: '0.55rem 0.75rem',
+                              marginTop: '0.35rem',
+                              borderTop: '1px solid var(--color-border)',
+                              borderRadius: 'var(--radius-md)',
+                              fontSize: '0.825rem',
+                              color: 'var(--color-error)',
+                              fontWeight: 600
+                            }}
+                          >
+                            <LogOut size={15} />
+                            <span>Sign Out</span>
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <Link
+                            to="/login"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="btn btn-primary btn-sm btn-block"
+                            style={{ marginBottom: '0.4rem', justifyContent: 'center' }}
+                          >
+                            Customer Sign In
+                          </Link>
+                          <Link
+                            to="/signup"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="btn btn-outline btn-sm btn-block"
+                            style={{ marginBottom: '0.65rem', justifyContent: 'center' }}
+                          >
+                            Create Account
+                          </Link>
+                          <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '0.5rem' }}>
+                            <Link
+                              to="/admin/login"
+                              onClick={() => setUserMenuOpen(false)}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.4rem',
+                                fontSize: '0.75rem',
+                                color: 'var(--color-secondary-text)',
+                                padding: '0.3rem 0.4rem'
+                              }}
+                            >
+                              <ShieldCheck size={14} color="var(--color-accent-green)" />
+                              <span>Staff Admin Login</span>
+                            </Link>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </nav>
 
@@ -278,6 +468,19 @@ export function Navbar() {
                     <span>My Orders</span>
                   </NavLink>
                 </li>
+                {isAdmin && (
+                  <li>
+                    <NavLink
+                      to="/admin"
+                      onClick={closeMobileMenu}
+                      className={({ isActive }) => `mobile-drawer-link ${isActive ? 'active' : ''}`}
+                      style={{ backgroundColor: 'var(--color-dark-green)', color: '#FFF' }}
+                    >
+                      <ShieldCheck size={18} color="var(--color-accent-green)" />
+                      <span>Admin Console</span>
+                    </NavLink>
+                  </li>
+                )}
                 <li>
                   <NavLink
                     to="/profile"
@@ -285,9 +488,48 @@ export function Navbar() {
                     className={({ isActive }) => `mobile-drawer-link ${isActive ? 'active' : ''}`}
                   >
                     <User size={18} />
-                    <span>Guest Profile</span>
+                    <span>{user ? 'My Profile' : 'Account'}</span>
                   </NavLink>
                 </li>
+                {!user ? (
+                  <>
+                    <li>
+                      <NavLink
+                        to="/login"
+                        onClick={closeMobileMenu}
+                        className={({ isActive }) => `mobile-drawer-link ${isActive ? 'active' : ''}`}
+                      >
+                        <User size={18} />
+                        <span>Sign In</span>
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink
+                        to="/signup"
+                        onClick={closeMobileMenu}
+                        className={({ isActive }) => `mobile-drawer-link ${isActive ? 'active' : ''}`}
+                      >
+                        <User size={18} />
+                        <span>Create Account</span>
+                      </NavLink>
+                    </li>
+                  </>
+                ) : (
+                  <li>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        closeMobileMenu();
+                        await signOut();
+                      }}
+                      className="mobile-drawer-link"
+                      style={{ width: '100%', textAlign: 'left', color: 'var(--color-error)' }}
+                    >
+                      <LogOut size={18} />
+                      <span>Sign Out</span>
+                    </button>
+                  </li>
+                )}
                 <li>
                   <NavLink
                     to="/faq"
@@ -310,7 +552,7 @@ export function Navbar() {
                 color: 'var(--color-secondary-text)'
               }}
             >
-              <p style={{ fontWeight: 600, color: 'var(--color-dark-green)' }}>Nursury Demo</p>
+              <p style={{ fontWeight: 600, color: 'var(--color-dark-green)' }}>Nursury Botanical</p>
               <p>Bringing Green Life to Your Home</p>
             </div>
           </aside>

@@ -1,31 +1,29 @@
 // src/context/UserContext.jsx
-import { createContext, useContext, useState, useEffect } from 'react';
-import { loadFromStorage, saveToStorage } from '../utils/storage';
-import { useToast } from './ToastContext';
+import { createContext, useContext } from 'react';
+import { useAuth } from './AuthContext';
 
 const UserContext = createContext(null);
-const STORAGE_KEY = 'nursury_user_profile';
-
-const DEFAULT_PROFILE = {
-  displayName: 'Aarav Sharma',
-  email: 'aarav.sharma@example.com',
-  bio: 'Botanical enthusiast & indoor jungle curator in Bengaluru.',
-  joinedDate: 'October 2026'
-};
 
 export function UserProvider({ children }) {
-  const { addToast } = useToast();
-  const [profile, setProfile] = useState(() => {
-    return loadFromStorage(STORAGE_KEY, DEFAULT_PROFILE);
-  });
+  const { profile: authProfile, updateProfile: authUpdateProfile } = useAuth();
 
-  useEffect(() => {
-    saveToStorage(STORAGE_KEY, profile);
-  }, [profile]);
+  // Derive profile directly from AuthContext
+  const profile = {
+    displayName: authProfile?.full_name || authProfile?.displayName || authProfile?.email?.split('@')[0] || 'Aarav Sharma',
+    email: authProfile?.email || 'aarav.sharma@example.com',
+    bio: authProfile?.bio || 'Botanical enthusiast & indoor jungle curator.',
+    joinedDate: authProfile?.created_at
+      ? new Date(authProfile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+      : 'October 2026'
+  };
 
-  const updateProfile = (data) => {
-    setProfile((prev) => ({ ...prev, ...data }));
-    addToast('Profile updated successfully!', 'success');
+  const updateProfile = async (data) => {
+    if (authUpdateProfile) {
+      await authUpdateProfile({
+        full_name: data.displayName,
+        bio: data.bio
+      });
+    }
   };
 
   return (
