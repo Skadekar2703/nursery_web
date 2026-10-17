@@ -1,5 +1,5 @@
 // src/context/CartContext.jsx
-import { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { PRODUCTS, MOCK_PRICING } from '../data/products';
 import { loadFromStorage, saveToStorage } from '../utils/storage';
 import { useToast } from './ToastContext';
@@ -8,12 +8,31 @@ const CartContext = createContext(null);
 const STORAGE_KEY = 'nursury_cart';
 const COUPON_KEY = 'nursury_coupon';
 
+function deduplicateCartItems(rawItems) {
+  if (!Array.isArray(rawItems)) return [];
+  const map = new Map();
+  for (const item of rawItems) {
+    if (!item || !item.productId) continue;
+    const qty = Math.max(1, parseInt(item.quantity, 10) || 1);
+    if (map.has(item.productId)) {
+      map.set(item.productId, map.get(item.productId) + qty);
+    } else {
+      map.set(item.productId, qty);
+    }
+  }
+  return Array.from(map.entries()).map(([productId, quantity]) => ({
+    productId,
+    quantity
+  }));
+}
+
 export function CartProvider({ children }) {
   const { addToast } = useToast();
   const [items, setItems] = useState(() => {
-    return loadFromStorage(STORAGE_KEY, [
+    const stored = loadFromStorage(STORAGE_KEY, [
       { productId: 'prod-01', quantity: 1 }
     ]);
+    return deduplicateCartItems(stored);
   });
 
   const [appliedCoupon, setAppliedCoupon] = useState(() => {
@@ -65,6 +84,14 @@ export function CartProvider({ children }) {
     return Math.max(0, subtotal - discountAmount + deliveryFee);
   }, [subtotal, discountAmount, deliveryFee]);
 
+  const getItemQuantity = useCallback(
+    (productId) => {
+      const item = items.find((i) => i.productId === productId);
+      return item ? item.quantity : 0;
+    },
+    [items]
+  );
+
   const addToCart = (productId, quantity = 1, showNotification = true) => {
     const product = PRODUCTS.find((p) => p.id === productId);
     if (!product) return;
@@ -90,10 +117,10 @@ export function CartProvider({ children }) {
     }
   };
 
-  const updateQuantity = (productId, newQuantity) => {
+  const updateQuantity = (productId, newQuantity, showNotification = true) => {
     const qty = parseInt(newQuantity, 10);
     if (isNaN(qty) || qty <= 0) {
-      removeFromCart(productId);
+      removeFromCart(productId, showNotification);
       return;
     }
 
@@ -147,6 +174,7 @@ export function CartProvider({ children }) {
         finalTotal,
         appliedCoupon,
         freeDeliveryThreshold: MOCK_PRICING.freeDeliveryThreshold,
+        getItemQuantity,
         addToCart,
         updateQuantity,
         removeFromCart,

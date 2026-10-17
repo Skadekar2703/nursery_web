@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Heart, ShoppingBag, Star, Plus, Minus } from 'lucide-react';
 import { formatINR } from '../../utils/formatters';
@@ -6,12 +5,14 @@ import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 
 export function ProductCard({ product }) {
-  const { addToCart } = useCart();
+  const { items, addToCart, updateQuantity } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const navigate = useNavigate();
-  const [quantity, setQuantity] = useState(1);
 
   if (!product) return null;
+
+  const cartItem = items.find((item) => item.productId === product.id);
+  const inCartQty = cartItem ? cartItem.quantity : 0;
 
   const inWishlist = isInWishlist(product.id);
   const discountPercent = product.originalPrice
@@ -29,17 +30,17 @@ export function ProductCard({ product }) {
 
   const handleDecreaseQty = (e) => {
     e.stopPropagation();
-    setQuantity((prev) => Math.max(1, prev - 1));
+    updateQuantity(product.id, inCartQty - 1);
   };
 
   const handleIncreaseQty = (e) => {
     e.stopPropagation();
-    setQuantity((prev) => prev + 1);
+    updateQuantity(product.id, inCartQty + 1);
   };
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    addToCart(product.id, quantity);
+    addToCart(product.id, 1);
   };
 
   return (
@@ -102,42 +103,43 @@ export function ProductCard({ product }) {
 
         <div className="product-card-footer" onClick={(e) => e.stopPropagation()}>
           <div className="product-card-action-row">
-            <div
-              className="product-card-qty-control"
-              role="group"
-              aria-label={`Select quantity for ${product.name}`}
-            >
+            {inCartQty > 0 ? (
+              <div
+                className="product-card-qty-control"
+                role="group"
+                aria-label={`Quantity in basket for ${product.name}`}
+              >
+                <button
+                  type="button"
+                  onClick={handleDecreaseQty}
+                  className="product-card-qty-btn"
+                  aria-label={`Decrease quantity of ${product.name}`}
+                >
+                  <Minus size={13} strokeWidth={2.5} />
+                </button>
+                <span className="product-card-qty-value" aria-live="polite">
+                  {inCartQty}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleIncreaseQty}
+                  className="product-card-qty-btn"
+                  aria-label={`Increase quantity of ${product.name}`}
+                >
+                  <Plus size={13} strokeWidth={2.5} />
+                </button>
+              </div>
+            ) : (
               <button
                 type="button"
-                onClick={handleDecreaseQty}
-                className="product-card-qty-btn"
-                aria-label={`Decrease quantity of ${product.name}`}
-                disabled={quantity <= 1}
+                onClick={handleAddToCart}
+                className="btn btn-secondary btn-sm product-card-add-btn"
+                aria-label={`Add ${product.name} to basket`}
               >
-                <Minus size={13} strokeWidth={2.5} />
+                <ShoppingBag size={14} />
+                <span>Add to Basket</span>
               </button>
-              <span className="product-card-qty-value" aria-live="polite">
-                {quantity}
-              </span>
-              <button
-                type="button"
-                onClick={handleIncreaseQty}
-                className="product-card-qty-btn"
-                aria-label={`Increase quantity of ${product.name}`}
-              >
-                <Plus size={13} strokeWidth={2.5} />
-              </button>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleAddToCart}
-              className="btn btn-secondary btn-sm product-card-add-btn"
-              aria-label={`Add ${quantity} ${product.name} to basket`}
-            >
-              <ShoppingBag size={14} />
-              <span>Add to Basket</span>
-            </button>
+            )}
           </div>
         </div>
       </div>
