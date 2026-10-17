@@ -82,6 +82,7 @@ export function OrderConfirmation() {
       </div>
 
       <div
+        className="confirmation-card"
         style={{
           background: 'var(--color-white)',
           borderRadius: 'var(--radius-xl)',
@@ -91,16 +92,7 @@ export function OrderConfirmation() {
           marginBottom: '2rem'
         }}
       >
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-            gap: '1.5rem',
-            paddingBottom: '1.75rem',
-            borderBottom: '1px solid var(--color-border)',
-            marginBottom: '1.75rem'
-          }}
-        >
+        <div className="confirmation-meta-grid">
           <div>
             <div style={{ fontSize: '0.8rem', color: 'var(--color-secondary-text)', textTransform: 'uppercase', fontWeight: 700 }}>
               Order Reference
@@ -149,16 +141,18 @@ export function OrderConfirmation() {
                 justifyContent: 'space-between',
                 padding: '0.85rem 1rem',
                 borderRadius: 'var(--radius-md)',
-                background: 'var(--color-warm-cream)'
+                background: 'var(--color-warm-cream)',
+                flexWrap: 'wrap',
+                gap: '0.75rem'
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', minWidth: 0 }}>
                 <img
                   src={item.image}
                   alt={item.name}
-                  style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: 'var(--radius-sm)' }}
+                  style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: 'var(--radius-sm)', flexShrink: 0 }}
                 />
-                <div>
+                <div style={{ minWidth: 0 }}>
                   <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{item.name}</div>
                   <div style={{ fontSize: '0.8rem', color: 'var(--color-secondary-text)' }}>
                     Qty: {item.quantity} × {formatINR(item.price)}

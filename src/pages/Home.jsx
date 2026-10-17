@@ -50,14 +50,7 @@ export function Home() {
         }}
       >
         <div className="container">
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '3rem',
-              alignItems: 'center'
-            }}
-          >
+          <div className="hero-grid">
             <div>
               <div
                 style={{
@@ -165,6 +158,7 @@ export function Home() {
               </div>
 
               <div
+                className="hero-floating-badge"
                 style={{
                   position: 'absolute',
                   bottom: '-1rem',
@@ -243,13 +237,7 @@ export function Home() {
             </Link>
           </div>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              gap: '1.5rem'
-            }}
-          >
+          <div className="categories-grid">
             {CATEGORIES.map((cat) => (
               <CategoryCard key={cat.id} category={cat} />
             ))}
@@ -495,13 +483,7 @@ export function Home() {
             </p>
           </div>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-              gap: '2rem'
-            }}
-          >
+          <div className="benefits-grid">
             <div
               style={{
                 background: 'rgba(255, 255, 255, 0.08)',
@@ -633,6 +615,7 @@ export function Home() {
       <section style={{ padding: '4.5rem 0' }}>
         <div className="container">
           <div
+            className="newsletter-card"
             style={{
               background: 'var(--color-soft-sage)',
               borderRadius: 'var(--radius-xl)',

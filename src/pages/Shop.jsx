@@ -183,6 +183,7 @@ export function Shop() {
       </div>
 
       <div
+        className="shop-toolbar"
         style={{
           background: 'var(--color-white)',
           padding: '1rem 1.25rem',
@@ -197,7 +198,7 @@ export function Shop() {
           boxShadow: 'var(--shadow-sm)'
         }}
       >
-        <div style={{ position: 'relative', flex: '1 1 280px', minWidth: '220px' }}>
+        <div className="shop-search-wrapper" style={{ position: 'relative', flex: '1 1 240px', minWidth: '180px' }}>
           <Search
             size={18}
             style={{
@@ -234,7 +235,7 @@ export function Shop() {
           )}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+        <div className="shop-actions-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
           <button
             type="button"
             className="btn btn-secondary btn-sm"

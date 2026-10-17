@@ -78,6 +78,7 @@ export function Orders() {
           return (
             <article
               key={order.id}
+              className="order-card"
               style={{
                 background: 'var(--color-white)',
                 borderRadius: 'var(--radius-xl)',

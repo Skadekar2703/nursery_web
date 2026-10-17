@@ -87,6 +87,7 @@ export function Logo({
       {!isCompact && (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <span
+            className="logo-text"
             style={{
               fontFamily: 'var(--font-heading)',
               fontSize: `${1.45 * scale}rem`,
@@ -100,6 +101,7 @@ export function Logo({
           </span>
           {showTagline && (
             <span
+              className="logo-tagline"
               style={{
                 fontFamily: 'var(--font-body)',
                 fontSize: `${0.65 * scale}rem`,

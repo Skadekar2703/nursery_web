@@ -142,14 +142,15 @@ export function Navbar() {
           {/* Quick Search Dropdown Bar */}
           {searchOpen && (
             <div
+              className="navbar-search-bar"
               style={{
                 padding: '0.85rem 0 1.15rem',
                 borderTop: '1px solid var(--color-border)',
                 animation: 'slideUp 200ms ease-out'
               }}
             >
-              <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '0.5rem' }}>
-                <div style={{ position: 'relative', flex: 1 }}>
+              <form onSubmit={handleSearchSubmit} className="navbar-search-form" style={{ display: 'flex', gap: '0.5rem' }}>
+                <div style={{ position: 'relative', flex: 1, minWidth: 0 }}>
                   <Search
                     size={18}
                     style={{
@@ -164,13 +165,13 @@ export function Navbar() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search plants, succulents, planters, care needs..."
+                    placeholder="Search plants, care needs..."
                     className="form-input"
-                    style={{ paddingLeft: '2.75rem', borderRadius: 'var(--radius-pill)' }}
+                    style={{ paddingLeft: '2.75rem', borderRadius: 'var(--radius-pill)', width: '100%' }}
                     autoFocus
                   />
                 </div>
-                <button type="submit" className="btn btn-primary btn-sm">
+                <button type="submit" className="btn btn-primary btn-sm" style={{ flexShrink: 0 }}>
                   Search
                 </button>
                 <button
@@ -178,6 +179,7 @@ export function Navbar() {
                   onClick={() => setSearchOpen(false)}
                   className="btn btn-ghost btn-sm"
                   aria-label="Cancel search"
+                  style={{ flexShrink: 0 }}
                 >
                   <X size={18} />
                 </button>
@@ -248,12 +250,12 @@ export function Navbar() {
                 </li>
                 <li>
                   <NavLink
-                    to="/orders"
+                    to="/cart"
                     onClick={closeMobileMenu}
                     className={({ isActive }) => `mobile-drawer-link ${isActive ? 'active' : ''}`}
                   >
-                    <Package size={18} />
-                    <span>My Orders</span>
+                    <ShoppingBag size={18} />
+                    <span>Shopping Basket ({cartCount})</span>
                   </NavLink>
                 </li>
                 <li>
@@ -264,6 +266,16 @@ export function Navbar() {
                   >
                     <Heart size={18} />
                     <span>Wishlist ({wishlistCount})</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/orders"
+                    onClick={closeMobileMenu}
+                    className={({ isActive }) => `mobile-drawer-link ${isActive ? 'active' : ''}`}
+                  >
+                    <Package size={18} />
+                    <span>My Orders</span>
                   </NavLink>
                 </li>
                 <li>

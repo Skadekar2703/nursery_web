@@ -57,6 +57,7 @@ export function Profile() {
       </div>
 
       <div
+        className="profile-card"
         style={{
           background: 'var(--color-white)',
           borderRadius: 'var(--radius-xl)',
@@ -154,14 +155,7 @@ export function Profile() {
         )}
       </div>
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-          gap: '1.5rem',
-          marginBottom: '3rem'
-        }}
-      >
+      <div className="profile-nav-grid">
         <Link
           to="/orders"
           style={{
@@ -281,6 +275,7 @@ export function Profile() {
       </div>
 
       <section
+        className="profile-card"
         style={{
           background: 'var(--color-white)',
           borderRadius: 'var(--radius-xl)',

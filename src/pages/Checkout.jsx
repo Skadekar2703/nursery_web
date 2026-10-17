@@ -173,15 +173,8 @@ export function Checkout() {
         </div>
       </div>
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '3rem',
-          alignItems: 'start'
-        }}
-      >
-        <div>
+      <div className="checkout-grid">
+        <div className="checkout-main-column">
           {currentStep === 'address' && (
             <div
               style={{
@@ -500,7 +493,7 @@ export function Checkout() {
                 ))}
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div className="checkout-nav-actions" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
                 <button
                   type="button"
                   onClick={() => setCurrentStep('address')}
@@ -637,7 +630,7 @@ export function Checkout() {
                 </label>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div className="checkout-nav-actions" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
                 <button
                   type="button"
                   onClick={() => setCurrentStep('summary')}

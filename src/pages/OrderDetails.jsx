@@ -69,6 +69,7 @@ export function OrderDetails() {
       </div>
 
       <div
+        className="order-details-card"
         style={{
           background: 'var(--color-white)',
           borderRadius: 'var(--radius-xl)',
@@ -147,22 +148,25 @@ export function OrderDetails() {
           {order.items.map((item, idx) => (
             <div
               key={idx}
+              className="order-item-row"
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 padding: '1rem',
                 borderRadius: 'var(--radius-md)',
-                background: 'var(--color-warm-cream)'
+                background: 'var(--color-warm-cream)',
+                flexWrap: 'wrap',
+                gap: '0.75rem'
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', minWidth: 0 }}>
                 <img
                   src={item.image}
                   alt={item.name}
-                  style={{ width: '56px', height: '56px', objectFit: 'cover', borderRadius: 'var(--radius-sm)' }}
+                  style={{ width: '56px', height: '56px', objectFit: 'cover', borderRadius: 'var(--radius-sm)', flexShrink: 0 }}
                 />
-                <div>
+                <div style={{ minWidth: 0 }}>
                   <h4 style={{ fontSize: '1rem' }}>
                     <Link to={`/product/${item.slug}`}>{item.name}</Link>
                   </h4>
@@ -178,15 +182,7 @@ export function OrderDetails() {
           ))}
         </div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '2rem',
-            borderTop: '1px solid var(--color-border)',
-            paddingTop: '1.75rem'
-          }}
-        >
+        <div className="order-details-summary-grid">
           <div>
             <h4 style={{ fontSize: '1rem', color: 'var(--color-dark-green)', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <MapPin size={17} color="var(--color-primary-green)" />

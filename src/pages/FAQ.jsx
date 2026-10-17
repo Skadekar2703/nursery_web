@@ -121,6 +121,7 @@ export function FAQ() {
           return (
             <div
               key={secIdx}
+              className="faq-card"
               style={{
                 background: 'var(--color-white)',
                 borderRadius: 'var(--radius-xl)',

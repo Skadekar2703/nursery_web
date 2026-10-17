@@ -30,14 +30,7 @@ export function Categories() {
       </div>
 
       {/* Grid of 6 Categories */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-          gap: '2rem',
-          marginBottom: '5rem'
-        }}
-      >
+      <div className="categories-grid" style={{ marginBottom: '5rem' }}>
         {CATEGORIES.map((category) => (
           <CategoryCard key={category.id} category={category} />
         ))}

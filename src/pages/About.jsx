@@ -26,15 +26,7 @@ export function About() {
       </div>
 
       {/* Two Column Story Section */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '3.5rem',
-          alignItems: 'center',
-          marginBottom: '5rem'
-        }}
-      >
+      <div className="about-story-grid" style={{ marginBottom: '5rem' }}>
         <div>
           <h2 style={{ fontSize: '2rem', marginBottom: '1.25rem' }}>
             Nurtured With Care, Grown For Life
@@ -80,13 +72,7 @@ export function About() {
       {/* Core Values */}
       <section style={{ marginBottom: '5rem' }}>
         <h2 style={{ textAlign: 'center', marginBottom: '2.5rem' }}>Our Guiding Principles</h2>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '2rem'
-          }}
-        >
+        <div className="about-values-grid">
           <div
             style={{
               background: 'var(--color-white)',

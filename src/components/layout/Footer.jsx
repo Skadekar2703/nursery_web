@@ -16,15 +16,7 @@ export function Footer() {
       }}
     >
       <div className="container">
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: '2.5rem',
-            paddingBottom: '3.5rem',
-            borderBottom: '1px solid rgba(229, 239, 227, 0.15)'
-          }}
-        >
+        <div className="footer-grid">
           {/* Brand Info */}
           <div style={{ maxWidth: '320px' }}>
             <Logo variant="white" showTagline size="md" />

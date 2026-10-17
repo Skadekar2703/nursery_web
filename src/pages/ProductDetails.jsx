@@ -103,16 +103,8 @@ export function ProductDetails() {
         <span style={{ color: 'var(--color-dark-green)', fontWeight: 600 }}>{product.name}</span>
       </nav>
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '3.5rem',
-          alignItems: 'start',
-          marginBottom: '5rem'
-        }}
-      >
-        <div style={{ position: 'sticky', top: '100px' }}>
+      <div className="product-details-grid">
+        <div className="product-details-media" style={{ position: 'sticky', top: '100px' }}>
           <div
             style={{
               position: 'relative',
@@ -289,6 +281,7 @@ export function ProductDetails() {
           </p>
 
           <div
+            className="product-details-specs"
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(2, 1fr)',
@@ -364,6 +357,7 @@ export function ProductDetails() {
           </div>
 
           <div
+            className="product-details-actions"
             style={{
               display: 'flex',
               gap: '1rem',
